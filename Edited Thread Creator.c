@@ -88,15 +88,7 @@ void deadlockDetected(pthread_t threads[], ThreadInfo thread_info[], int allocat
     printf("A deadlock has been detected. \n");
     printf("Deadlock is created from. \n");
     displayDeadlock(allocated, requested);
-    //printf("1. Terminate a Process\n");
-    //printf("2. Release a Resource\n");
-   //scanf("%d", &choice);
-
-    /*
-     printf("Which Process would you like to delete? \n");
-    scanf("%d", &toDelete);
-    */
-   // if(choice == 1){
+    
         printf("");
         printf("Which Process would you like to terminate? \n");
         scanf("%d", &toDelete);
@@ -108,25 +100,6 @@ void deadlockDetected(pthread_t threads[], ThreadInfo thread_info[], int allocat
             allocated[thread_info[toDelete].resources[j]] -= 1;
         }
 
-    /*}else if (choice == 2){
-        printf("Which resource would you like to release? \n");
-        scanf("%d", &toRelease);
-        int resource = -1;
-        int thread = -1;
-        
-        for(int i = 0; i < (int)(sizeof(*threads)); i++){                                                                               
-            for(int k = 0; k < (thread_info[i].resource_count); k++){
-                if(thread_info[i].resources[k] == (int)toRelease){
-                    resource = thread_info[i].resources[k];
-                    thread = i;
-                    break;
-                }
-            }
-        }
-
-        thread_info[thread].resources[resource] = -1;
-        
-    }*/
     deadlock = 0;
 }
 
