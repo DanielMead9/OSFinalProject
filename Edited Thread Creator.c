@@ -16,7 +16,6 @@ int thread_count = 0, resource_c = 0, deadlock = 0;
 
 void *use_resources(void *arg) {
     ThreadInfo *info = (ThreadInfo *)arg;
-
     printf("Thread %d is using resources: ", info->thread_id);
     for (int i = 0; i < info->resource_count; i++) {
         printf("%d ", info->resources[i]);
@@ -51,7 +50,7 @@ void requestdetector(ThreadInfo thread_info[], int allocated[], int requested[])
         }
     }
     for (int i = 0; i < (int)sizeof(*requested); i++){
-        if (requested[i] > 0 && allocated[i] > 1){
+        if (requested[i] > 0 && allocated[i] == 1){
             for (int k = 0; k < thread_count; k++){
                 for (int j = 0; j < thread_info[k].resource_count; j++){
                     if (thread_info[k].resources[j] == i && allocated[thread_info[k].resource_request] > 0){
@@ -66,72 +65,78 @@ void requestdetector(ThreadInfo thread_info[], int allocated[], int requested[])
 }
 
 void displayDeadlock(int allocated[], int requested[]){
-    char rD[(int)sizeof(*allocated)];
+    int rD[(int)sizeof(*allocated)];
+    //for(int j = 0; j < (int)sizeof(*allocated))
     for(int i = 0; i < (int)sizeof(*allocated); i++){
         if(allocated[i] + requested[i] > 1){
             rD[i] = i;
-            printf("% d \n", allocated[i]);
+        }else {
+            rD[i] = -1;
         }
     }
-    printf("The Resources that are causing problems are : %s \n", rD);
+    printf("The Resources that are causing the deadlock are : ");
+    for(int i = 0; i < (int)sizeof(*allocated); i++){
+        if(rD[i] != -1){
+            printf("%d, ", rD[i]);
+        }
+    }
+    printf("\n");
 }
 
 void deadlockDetected(pthread_t threads[], ThreadInfo thread_info[], int allocated[], int requested[]){
     int choice, toDelete, toRelease;
-    printf("A deadlock has been detected what would you like to do? \n");
+    printf("A deadlock has been detected. \n");
     printf("Deadlock is created from. \n");
     displayDeadlock(allocated, requested);
-    printf("1. Terminate a Process\n");
-    printf("2. Release a Resource\n");
-    //scanf("%d", &choice);
+    //printf("1. Terminate a Process\n");
+    //printf("2. Release a Resource\n");
+   //scanf("%d", &choice);
 
     /*
      printf("Which Process would you like to delete? \n");
     scanf("%d", &toDelete);
     */
-    if(choice == 1){
+   // if(choice == 1){
         printf("");
-        printf("Which Process would you like to delete? \n");
+        printf("Which Process would you like to terminate? \n");
         scanf("%d", &toDelete);
-        pthread_t tempT [thread_count - 1];
-        ThreadInfo tempTI [thread_count - 1];
-        for(int i = 0; i < (int)sizeof(*threads); i++){
-            if(i != toDelete){
-                tempT[i] = threads[i];
-                tempTI[i] = thread_info[i];
-            }
-        }
-        threads = tempT;
-        thread_info = tempTI;
-    
+        printf("Process %d has been terminated \n", toDelete);
 
-    }else if (choice == 2){
+        threads[toDelete] = NULL;
+
+        for (int j = 0; j < thread_info[toDelete].resource_count; j++){
+            allocated[thread_info[toDelete].resources[j]] -= 1;
+        }
+
+    /*}else if (choice == 2){
         printf("Which resource would you like to release? \n");
         scanf("%d", &toRelease);
+        int resource = -1;
+        int thread = -1;
         
-        for(int i = 0; i < (int)(sizeof(*threads)); i++){
-            int final[100];
-            printf("%d \n", thread_info[i].resource_count);
-            for(int k = 0, j = 0; k < 100; k++){
-                if(thread_info[i].resources[k] != (int)toRelease){
-                    final[j] = thread_info[i].resources[k];
-                    j++;
+        for(int i = 0; i < (int)(sizeof(*threads)); i++){                                                                               
+            for(int k = 0; k < (thread_info[i].resource_count); k++){
+                if(thread_info[i].resources[k] == (int)toRelease){
+                    resource = thread_info[i].resources[k];
+                    thread = i;
+                    break;
                 }
             }
-            for(int w = 0; w < (int)thread_info[i].resource_count; w++){
-                    thread_info[i].resources[w] = final[w];
-            }
         }
+
+        thread_info[thread].resources[resource] = -1;
         
-    }
+    }*/
+    deadlock = 0;
 }
 
 
-int requestchain(k,j,i) 
+int requestchain(int k, int j, int i) {
+
+}
 
 
 int main() {
-    
 
     // Input number of threads
     printf("Enter the number of threads: ");
@@ -150,6 +155,10 @@ int main() {
     ThreadInfo thread_info[thread_count];
     int allocated[resource_c];
     int requested[resource_c];
+
+    for(int i = 0; i < thread_count; i++){
+        thread_info[i].resource_count = -1;
+    }
 
     for(int i = 0; i < resource_c; i++){
         allocated[i] = 0;
@@ -198,7 +207,7 @@ int main() {
     */
    detector(thread_info, allocated);
    if(deadlock == 0){
-
+    printf("Resources have been allocated \n");
    } else if (deadlock == 1){
     deadlockDetected(threads, thread_info, allocated,requested );
    }
@@ -209,26 +218,37 @@ int main() {
 
     */ 
     for (int i = 0; i < thread_count; i++) {
-        printf("Enter resource request for thread %d: ", i);
-        int request;
-        scanf("%d", &request);
+        if(threads[i] != NULL){
+            printf("Enter resource request for thread %d: ", i);
+            int request;
+            scanf("%d", &request);
 
-        if (request >= 0 && request < resource_c) {
-            thread_info[i].resource_request = request;
-        } else {
-            printf("Invalid resource request %d for thread %d. Setting to -1.\n", request, i);
-            thread_info[i].resource_request = -1;
+            if (request >= 0 && request < resource_c) {
+                thread_info[i].resource_request = request;
+            } else {
+                printf("Invalid resource request %d for thread %d. Setting to -1.\n", request, i);
+                thread_info[i].resource_request = -1;
+            }
         }
+        
     }
 
     requestdetector(thread_info, allocated, requested);
+    if(deadlock == 0){
+        printf("No Deadlock deteced all Processes Complete \n");
+
+   } else if (deadlock == 1){
+    deadlockDetected(threads, thread_info, allocated,requested );
+   }
 
     // Create threads
     for (int i = 0; i < thread_count; i++) {
-        if (pthread_create(&threads[i], NULL, use_resources, (void *)&thread_info[i]) != 0) {
-            perror("Failed to create thread");
-            return 1;
-        }
+        if(threads[i] != NULL){
+            if (pthread_create(&threads[i], NULL, use_resources, (void *)&thread_info[i]) != 0) {
+                perror("Failed to create thread");
+                return 1;
+            }
+        } 
     }
 
     // Wait for threads to complete
