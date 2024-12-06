@@ -13,6 +13,7 @@ typedef struct {
 } ThreadInfo;
 
 int thread_count, resource_count, deadlock = 0;
+int allocated[resource_count];
 
 void *use_resources(void *arg) {
     ThreadInfo *info = (ThreadInfo *)arg;
@@ -27,31 +28,38 @@ void *use_resources(void *arg) {
     pthread_exit(NULL);
 }
 
-void detector() {
-    int allocated[resource_count];
+void detector(ThreadInfo thread_info[]) {
     for (int i = 0; i < thread_count; i++) {
         for (int j = 0; j < thread_info[i].resource_count; j++){
-            allocated[thread_info[i].resource]++;
+            allocated[thread_info[i].resources[j]]++;
         }
     }
     for (int i = 0; i < sizeof(allocated); i++){
         if (allocated[i] > 1){
             deadlock = 1;
+            break;
         }
 
     }
 }
 
-void requestdetector() {
-    int request[resource_count];
+void requestdetector(ThreadInfo thread_info[]) {
+    int requested[resource_count];
     for (int i = 0; i < thread_count; i++) {
         for (int j = 0; j < thread_info[i].resource_count; j++){
-            allocated[thread_info[i].resource]++;
+            requested[thread_info[i].resource_request]++;
         }
     }
-    for (int i = 0; i < sizeof(allocated); i++){
-        if (allocated[i] > 1){
-            
+    for (int i = 0; i < sizeof(requested); i++){
+        if (requested[i] > 0 && allocated[i] > 1){
+            for (int k = 0; k < thread_count; k++){
+                for (int j = 0; j < thread_info[k]; j++){
+                    if (thread_info[k].resources[j] == i && allocated[thread_info[k].resource_request] > 0){
+                        deadlock = 1;
+
+                    }
+                }
+            }
         }
 
     }
@@ -117,7 +125,7 @@ int main() {
         on after to resource requests per thread.
     ======================================================================================
     */
-   detector();
+   detector(thread_info);
     /*
         User input for singular resource request for each thread
 
