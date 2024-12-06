@@ -10,8 +10,9 @@ typedef struct {
     int resource_count;
     int resources[MAX_RESOURCES];
     int resource_request; // Added Characteristic based on Professor request
-
 } ThreadInfo;
+
+int thread_count, resource_count, deadlock = 0;
 
 void *use_resources(void *arg) {
     ThreadInfo *info = (ThreadInfo *)arg;
@@ -26,8 +27,23 @@ void *use_resources(void *arg) {
     pthread_exit(NULL);
 }
 
+void detector() {
+    int allocated[resource_count];
+    for (int i = 0; i < thread_count; i++) {
+        for (int j = 0; j < thread_info[i].resource_count; j++){
+            allocated[thread_info[i].resource]++;
+        }
+    }
+    for (int i = 0; i < sizeof(allocated); i++){
+        if (allocated[i] > 1){
+            deadlock = 1;
+        }
+
+    }
+}
+
 int main() {
-    int thread_count, resource_count;
+    
 
     // Input number of threads
     printf("Enter the number of threads: ");
@@ -86,7 +102,7 @@ int main() {
         on after to resource requests per thread.
     ======================================================================================
     */
-
+   detector()
     /*
         User input for singular resource request for each thread
 
