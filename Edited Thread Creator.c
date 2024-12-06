@@ -43,14 +43,8 @@ void detector(ThreadInfo thread_info[], int allocated[]) {
     }
 }
 
-<<<<<<< HEAD
 void requestdetector(ThreadInfo thread_info[]) {
     int requested[resource_count], reqchain = 0;
-=======
-void requestdetector(ThreadInfo thread_info[], int allocated[]) {
-    int requested[resource_count];
-
->>>>>>> d93c221ca7a0797f5071d74c3aa73f95361947ab
     for (int i = 0; i < thread_count; i++) {
         for (int j = 0; j < thread_info[i].resource_count; j++){
             requested[thread_info[i].resource_request]++;
@@ -58,21 +52,11 @@ void requestdetector(ThreadInfo thread_info[], int allocated[]) {
     }
     for (int i = 0; i < sizeof(requested); i++){
         if (requested[i] > 0 && allocated[i] > 1){
-<<<<<<< HEAD
-            while(reqchain = 0){
-                for (int k = 0; k < thread_count; k++){
-                    for (int j = 0; j < thread_info[k]; j++){
-                        if (thread_info[k].resources[j] == i && allocated[thread_info[k].resource_request] > 0){
-                            deadlock = 1;
-                            elif 
-                        }
-=======
             for (int k = 0; k < thread_count; k++){
                 for (int j = 0; j < thread_info[k].resource_count; j++){
                     if (thread_info[k].resources[j] == i && allocated[thread_info[k].resource_request] > 0){
                         deadlock = 1;
                         printf("Pizza");
->>>>>>> d93c221ca7a0797f5071d74c3aa73f95361947ab
                     }
                 }
             }
