@@ -44,7 +44,7 @@ void detector(ThreadInfo thread_info[], int allocated[]) {
 }
 
 void requestdetector(ThreadInfo thread_info[], int allocated[], int requested[]) {
-    
+    int reqchain = 0;
     for (int i = 0; i < thread_count; i++) {
         for (int j = 0; j < thread_info[i].resource_count; j++){
             requested[thread_info[i].resource_request]++;
@@ -125,6 +125,9 @@ void deadlockDetected(pthread_t threads[], ThreadInfo thread_info[], int allocat
         
     }
 }
+
+
+int requestchain(k,j,i) 
 
 
 int main() {
