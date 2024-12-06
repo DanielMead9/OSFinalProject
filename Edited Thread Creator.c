@@ -84,11 +84,10 @@ void displayDeadlock(int allocated[], int requested[]){
 }
 
 void deadlockDetected(pthread_t threads[], ThreadInfo thread_info[], int allocated[], int requested[]){
-    int choice, toDelete, toRelease;
+    int toDelete;
     printf("A deadlock has been detected. \n");
-    printf("Deadlock is created from. \n");
     displayDeadlock(allocated, requested);
-    
+
         printf("");
         printf("Which Process would you like to terminate? \n");
         scanf("%d", &toDelete);
@@ -191,7 +190,7 @@ int main() {
 
     */ 
     for (int i = 0; i < thread_count; i++) {
-        if(threads[i] != NULL){
+        if((threads[i] != NULL)){
             printf("Enter resource request for thread %d: ", i);
             int request;
             scanf("%d", &request);
@@ -203,6 +202,7 @@ int main() {
                 thread_info[i].resource_request = -1;
             }
         }
+
         
     }
 
